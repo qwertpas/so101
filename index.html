@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121a22">
+  <title>SO-101 controller</title>
+</head>
+<body>
+  <main id="viewer" aria-label="3D robot view">
+    <div id="view-tools"><button id="home">Reset view</button><label><input id="show-ghost" type="checkbox" checked> Show ghost</label></div>
+    <div id="legend"><span class="yellow">●</span> Measured arm &nbsp; <span class="cyan">●</span> Ghost target</div>
+  </main>
+  <aside>
+    <h1>SO-101</h1>
+    <p id="status" role="status" aria-live="polite">Loading robot…</p>
+    <section aria-labelledby="connection-heading">
+      <h2 id="connection-heading">Connection</h2>
+      <p id="browser-help" class="muted">Use Chrome or Edge on desktop. Choose a port once to grant access.</p>
+      <label for="ports">Serial port</label>
+      <div class="row"><select id="ports" disabled><option>No approved ports</option></select><button id="choose" disabled>Choose port…</button></div>
+      <div class="row"><button id="connect" disabled>Connect</button><button id="disconnect" disabled>Disconnect</button></div>
+      <label for="calibration">LeRobot calibration JSON</label>
+      <input id="calibration" type="file" accept=".json,application/json">
+      <p id="calibration-name" class="muted">Import once; calibration stays in this browser.</p>
+      <label><input type="checkbox" id="demo"> Demo (simulated feedback)</label>
+    </section>
+    <section>
+      <fieldset id="modes" disabled><legend>Control</legend>
+        <label><input type="radio" name="mode" value="ghost" checked> Ghost only</label>
+        <label><input type="radio" name="mode" value="track"> Track end effector</label>
+        <label><input type="radio" name="mode" value="joint"> Joint control</label>
+      </fieldset>
+      <label for="speed">Max speed <output id="speed-value">45°/s</output></label>
+      <input id="speed" type="range" min="1" max="180" value="45">
+      <button id="stop" class="stop">Stop &amp; hold</button>
+      <button id="release" disabled>Free joints (torque off)</button>
+    </section>
+    <section><h2>Joint angles</h2><div id="joints"></div></section>
+    <section id="target-controls">
+      <h2>End effector target</h2>
+      <p class="muted">Drag the arrows or enter coordinates in millimeters.</p>
+      <div class="coordinates">
+        <label>X <input id="x" type="number" step="1" min="-600" max="600"></label>
+        <label>Y <input id="y" type="number" step="1" min="-600" max="600"></label>
+        <label>Z <input id="z" type="number" step="1" min="-200" max="700"></label>
+      </div>
+      <label><input id="match" type="checkbox" checked> Match tool orientation</label>
+      <label for="tilt">Tilt <output id="tilt-value"></output></label><input id="tilt" type="range" step="0.1">
+      <label for="twist">Twist <output id="twist-value"></output></label><input id="twist" type="range" step="0.1">
+      <label for="gripper">Gripper <output id="gripper-value"></output></label><input id="gripper" type="range" step="0.1">
+      <button id="reset">Reset target to arm</button>
+      <p id="ik" class="muted"></p>
+    </section>
+    <section><h2>Servos</h2><table><thead><tr><th>Joint</th><th>Angle</th><th>Temp</th><th>Torque</th></tr></thead><tbody id="telemetry"></tbody></table></section>
+    <details id="registers"><summary>Servo registers</summary><div id="register-values"></div></details>
+    <p class="muted footnote">Switching tabs stops motion and holds position. Support the arm before releasing torque. Closing the browser or unplugging USB cannot guarantee a stop. No collision avoidance.</p>
+  </aside>
+  <script type="module" src="/webinteractive/browser/main.js"></script>
+</body>
+</html>

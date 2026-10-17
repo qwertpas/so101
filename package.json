@@ -1,0 +1,21 @@
+{
+  "name": "so101",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test webinteractive/browser/tests/*.test.js"
+  },
+  "dependencies": {
+    "ml-matrix": "6.15.0",
+    "three": "0.186.1",
+    "urdf-loader": "0.13.1"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "0.9.12",
+    "vite": "8.3.4"
+  }
+}

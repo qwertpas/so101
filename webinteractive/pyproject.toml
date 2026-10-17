@@ -1,0 +1,25 @@
+[project]
+name = "so101-webinteractive"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "viser==1.1.1",
+  "yourdfpy==0.0.60",
+  "scipy==1.18.1",
+  "numpy==2.5.3",
+  "pyserial==3.5",
+  "feetech-servo-sdk==1.0.0",
+]
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff>=0.13"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

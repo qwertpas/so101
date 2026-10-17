@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.log
+webinteractive/state.json
+
+node_modules/
+dist/
+.DS_Store
