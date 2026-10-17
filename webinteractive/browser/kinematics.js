@@ -22,6 +22,17 @@ export class Kinematics {
     return pose.multiply(this.tool);
   }
 
+  rotationAxes(angles) {
+    const pose = new Matrix4();
+    const axes = [];
+    this.origins.forEach((origin, i) => {
+      pose.multiply(origin);
+      if (i >= 3) axes.push(this.axes[i].clone().transformDirection(pose));
+      pose.multiply(new Matrix4().makeRotationAxis(this.axes[i], angles[i]));
+    });
+    return axes;
+  }
+
   solve(position, tilt, twist, seed, matchRotation) {
     if (![...position.toArray(), tilt, twist, ...seed].every(Number.isFinite)) throw Error('Invalid target');
     const { min, max } = this.calibration;

@@ -9,7 +9,8 @@
 <body>
   <main id="viewer" aria-label="3D robot view">
     <div id="view-tools"><button id="home">Reset view</button><label><input id="show-ghost" type="checkbox" checked> Show ghost</label></div>
-    <div id="legend"><span class="yellow">●</span> Measured arm &nbsp; <span class="cyan">●</span> Ghost target</div>
+    <div id="legend"><span class="yellow">●</span> Measured arm &nbsp; <span class="cyan">●</span> Ghost target<br><span class="orange">○</span> Tilt &nbsp; <span class="purple">○</span> Twist &nbsp; <span class="green">●</span> Gripper</div>
+    <div id="handle-hint" hidden></div>
   </main>
   <aside>
     <h1>SO-101</h1>
@@ -39,7 +40,7 @@
     <section><h2>Joint angles</h2><div id="joints"></div></section>
     <section id="target-controls">
       <h2>End effector target</h2>
-      <p class="muted">Drag the arrows or enter coordinates in millimeters.</p>
+      <p class="muted">Drag the arrows to move, orange ring to tilt, purple ring to twist, or green handle to open the gripper.</p>
       <div class="coordinates">
         <label>X <input id="x" type="number" step="1" min="-600" max="600"></label>
         <label>Y <input id="y" type="number" step="1" min="-600" max="600"></label>

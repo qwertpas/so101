@@ -5,6 +5,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { Bus } from './serial.js';
 import { Calibration, names, clamp } from './calibration.js';
 import { Kinematics } from './kinematics.js';
+import { TargetHandles } from './handles.js';
 import { registers } from './registers.js';
 import defaultCalibration from '../calibrations/arm1.json';
 import './style.css';
@@ -48,13 +49,34 @@ transform.attach(handle);
 scene.add(transform.getHelper());
 transform.addEventListener('dragging-changed', event => { orbit.enabled = !event.value; });
 transform.addEventListener('objectChange', () => { dirty = true; updateCoordinates(); });
+const targetHandles = new TargetHandles(scene, camera, renderer.domElement, orbit, (name, value) => {
+  if (name === 'gripper') target[5] = value;
+  else {
+    if (name === 'tilt') tilt = value;
+    else twist = value;
+    dirty = true;
+  }
+}, $('handle-hint'));
 new ResizeObserver(() => {
   const { width, height } = viewer.getBoundingClientRect();
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
 }).observe(viewer);
-renderer.setAnimationLoop(() => { orbit.update(); renderer.render(scene, camera); });
+renderer.setAnimationLoop(() => {
+  if (kin) {
+    const requested = [...target];
+    requested[3] = tilt - target[1] - target[2];
+    requested[4] = twist;
+    targetHandles.update(handle.position, kin.pose(requested), kin.rotationAxes(requested),
+      { tilt, twist, gripper: target[5] },
+      { tilt: radians(Number($('tilt').min)), twist: calibration.min[4], gripper: calibration.min[5] },
+      { tilt: radians(Number($('tilt').max)), twist: calibration.max[4], gripper: calibration.max[5] },
+      mode !== 'joint' && !busy, $('match').checked);
+  }
+  orbit.update();
+  renderer.render(scene, camera);
+});
 
 for (const [i, label] of labels.entries()) {
   const row = document.createElement('div');
@@ -101,6 +123,7 @@ function configure(data, label) {
 }
 
 function setMode(value) {
+  targetHandles.cancel();
   mode = value;
   document.querySelector(`input[name=mode][value=${mode}]`).checked = true;
 }

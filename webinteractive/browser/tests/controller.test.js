@@ -173,6 +173,20 @@ test('browser forward kinematics matches Python/scipy reference matrices', () =>
   }
 });
 
+test('tilt and twist handle axes follow the URDF joints', () => {
+  const kin = new Kinematics(model(), calibration);
+  for (const { angles } of fixtures.poses) {
+    const before = new Quaternion().setFromRotationMatrix(kin.pose(angles));
+    kin.rotationAxes(angles).forEach((axis, i) => {
+      const moved = [...angles];
+      moved[i + 3] += 1e-5;
+      const turn = new Quaternion().setFromRotationMatrix(kin.pose(moved)).multiply(before.clone().invert());
+      const measured = new Vector3(turn.x, turn.y, turn.z).normalize();
+      assert.ok(axis.distanceTo(measured) < 1e-8);
+    });
+  }
+});
+
 test('bounded IK reaches known poses and rejects unreachable positions', () => {
   const kin = new Kinematics(model(), calibration);
   for (const { angles } of fixtures.poses) {
