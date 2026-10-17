@@ -6,6 +6,7 @@ import { Bus } from './serial.js';
 import { Calibration, names, clamp } from './calibration.js';
 import { Kinematics } from './kinematics.js';
 import { registers } from './registers.js';
+import defaultCalibration from '../calibrations/arm1.json';
 import './style.css';
 
 const $ = id => document.getElementById(id);
@@ -150,7 +151,7 @@ function updateControls() {
   const ready = !!kin;
   $('ports').disabled = connected || busy || !ports.length;
   $('choose').disabled = connected || busy || !navigator.serial;
-  $('connect').disabled = connected || busy || demo || !ports.length || !calibration || !hasCalibration;
+  $('connect').disabled = connected || busy || demo || !ports.length || !calibration;
   $('disconnect').disabled = !connected || busy;
   $('calibration').disabled = connected || busy;
   $('demo').disabled = connected || busy || !ready;
@@ -170,13 +171,13 @@ $('choose').onclick = async () => {
     const port = await navigator.serial.requestPort();
     await refreshPorts();
     $('ports').value = String(ports.indexOf(port));
-    status(hasCalibration ? 'Port selected · click Connect' : 'Port selected · import your calibration JSON');
+    status('Port selected · click Connect');
   } catch (error) { if (error.name !== 'NotFoundError') status(error.message, true); }
 };
 $('connect').onclick = () => {
   const port = ports[Number($('ports').value)];
   enqueue(async () => {
-    if (connected || !port || !hasCalibration || demo) return;
+    if (connected || !port || !calibration || demo) return;
     status('Connecting at 1 Mbps · checking six servos…');
     const connection = new Bus(port, calibration);
     await connection.connect();
@@ -219,7 +220,6 @@ document.querySelectorAll('input[name=mode]').forEach(input => {
   };
 });
 
-let hasCalibration = false;
 $('calibration').onchange = async () => {
   const file = $('calibration').files[0];
   if (!file) return;
@@ -229,7 +229,6 @@ $('calibration').onchange = async () => {
     enqueue(async () => {
       if (connected) throw Error('Disconnect before changing calibration');
       configure(data, file.name);
-      hasCalibration = true;
       try { localStorage.setItem('so101-calibration', JSON.stringify({ data, name: file.name })); }
       catch { status('Calibration loaded; browser storage is unavailable'); return; }
       status('Calibration saved in this browser · select a port and connect');
@@ -317,17 +316,16 @@ try {
     if (node.isMesh) node.material = new THREE.MeshStandardMaterial({ color: 0x45cbdc, transparent: true, opacity: 0.28, depthWrite: false });
   });
   scene.add(robot, ghost);
-  const demoCalibration = Object.fromEntries(names.map((name, i) => [name, { id: i + 1, drive_mode: 0, homing_offset: 0, range_min: i === 5 ? 2048 : 512, range_max: i === 5 ? 3072 : 3583 }]));
-  configure(demoCalibration, 'Import once; calibration stays in this browser.');
+  configure(defaultCalibration, 'arm1.json (default)');
   try {
     const saved = JSON.parse(localStorage.getItem('so101-calibration'));
-    if (saved) { configure(saved.data, saved.name); hasCalibration = true; }
+    if (saved) configure(saved.data, saved.name);
   } catch (error) { status(`Stored calibration unavailable: ${error.message}`, true); }
   if (navigator.serial) {
     navigator.serial.addEventListener('connect', refreshPorts);
     navigator.serial.addEventListener('disconnect', () => { enqueue(async () => { if (connected) await disconnect(); await refreshPorts(); }); });
     await refreshPorts();
-    status(hasCalibration ? 'Select a serial port to connect · ghost only' : 'Import your calibration JSON, then choose a serial port');
+    status('Select a serial port to connect · ghost only');
   } else {
     $('browser-help').textContent = 'Web Serial requires desktop Chrome or Edge over HTTPS. Demo is available in this browser.';
     status('Serial unavailable · use desktop Chrome or Edge', true);

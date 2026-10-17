@@ -31,7 +31,7 @@ The Python 3.12 environment is `/Users/chris/Code/so101/.venv`, independent of L
 ./webinteractive/setup.sh
 ```
 
-The default calibration is auto-discovered when exactly one SO follower calibration exists in `~/.cache/huggingface/lerobot/calibration/robots/`. On this machine it is `so_follower/arm1.json`, created by the adjacent LeRobot project. The application reads the JSON directly and checks the servo homing offsets and limits without rewriting them. Joint conversion matches LeRobot's degree convention: `(raw - range_midpoint) * 360 / 4095`. The gripper is measured from its calibrated closed endpoint. The measured calibration endpoints are authoritative for motion limits; the stock URDF limits are generic and differ from this arm’s actual travel.
+The default calibration is saved in `webinteractive/calibrations/arm1.json` and versioned with this project. It was copied from the adjacent LeRobot project's calibration and does not depend on the Hugging Face cache. Use `--calibration PATH` to select another arm. The application reads the JSON directly and checks the servo homing offsets and limits without rewriting them. Joint conversion matches LeRobot's degree convention: `(raw - range_midpoint) * 360 / 4095`. The gripper is measured from its calibrated closed endpoint. The measured calibration endpoints are authoritative for motion limits; the stock URDF limits are generic and differ from this arm’s actual travel.
 
 ```sh
 ./webinteractive/run.sh --serial /dev/tty.usbmodem5B140335431

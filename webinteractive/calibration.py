@@ -51,8 +51,4 @@ class Calibration:
 def find_calibration(path: str | None = None) -> Path:
     if path:
         return Path(path).expanduser()
-    root = Path.home() / ".cache/huggingface/lerobot/calibration/robots"
-    paths = sorted(root.glob("so*_follower/*.json"))
-    if len(paths) != 1:
-        raise ValueError(f"Found {len(paths)} follower calibrations; select one with --calibration PATH")
-    return paths[0]
+    return Path(__file__).parent / "calibrations/arm1.json"

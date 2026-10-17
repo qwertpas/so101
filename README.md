@@ -2,10 +2,11 @@
 
 Open **https://qwertpas.github.io/so101/** in desktop Chrome or Edge. The browser connects directly to the USB servo adapter at 1 Mbps; no local Python server is needed.
 
-1. Import your LeRobot follower calibration JSON once (for this arm: `~/.cache/huggingface/lerobot/calibration/robots/so_follower/arm1.json`). It stays in this browser's local storage and is never uploaded.
-2. Click **Choose port…** and select the USB adapter in the browser's permission dialog. Previously approved adapters appear in the serial dropdown on future visits. Browsers do not expose macOS `/dev/tty…` paths; adapters are listed by USB vendor/product and port number.
-3. Click **Connect**. The app verifies all six STS3215 servos, position mode, homing offsets, and calibrated limits. Connection only reads the arm and starts in **Ghost only**.
-4. Select **Track end effector** or **Joint control** to enable torque. Activation resets the target to the measured arm pose before motion. Use **Stop & hold** to stop or **Free joints (torque off)** to release it.
+1. Click **Choose port…** and select the USB adapter in the browser's permission dialog. Previously approved adapters appear in the serial dropdown on future visits. Browsers do not expose macOS `/dev/tty…` paths; adapters are listed by USB vendor/product and port number.
+2. Click **Connect**. The app verifies all six STS3215 servos, position mode, homing offsets, and calibrated limits. Connection only reads the arm and starts in **Ghost only**.
+3. Select **Track end effector** or **Joint control** to enable torque. Activation resets the target to the measured arm pose before motion. Use **Stop & hold** to stop or **Free joints (torque off)** to release it.
+
+Your arm's calibration is saved in [webinteractive/calibrations/arm1.json](webinteractive/calibrations/arm1.json), versioned in this repository, and bundled into the published app by default. Both the browser and Python app use it without depending on the Hugging Face cache. **Override calibration** optionally imports another LeRobot JSON; overrides stay in that browser's local storage and are never uploaded.
 
 Close any Python server or other servo application before connecting. Only one application can own the adapter. **Demo** simulates feedback without opening a serial port. Safari and Firefox can use the demo but do not support this app's Web Serial connection.
 
