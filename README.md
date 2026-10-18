@@ -2,7 +2,7 @@
 
 # SO-101 controller
 
-[Open the controller](https://qwertpas.github.io/so101/) in desktop Chrome or Edge.
+[Open the controller](https://qwertpas.github.io/so101/) in your browser.
 
 Control an SO-101 robot arm directly through its USB servo adapter, with a 3D preview, end-effector targets, and individual joint controls.
 
