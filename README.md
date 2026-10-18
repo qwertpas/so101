@@ -1,32 +1,17 @@
+[![SO-101 controller demo](assets/screenshot.png)](https://qwertpas.github.io/so101/)
+
 # SO-101 controller
 
-Open **https://qwertpas.github.io/so101/** in desktop Chrome or Edge. The browser connects directly to the USB servo adapter at 1 Mbps; no local Python server is needed.
+[Open the controller](https://qwertpas.github.io/so101/) in desktop Chrome or Edge.
 
-1. Click **Choose port…** and select the USB adapter in the browser's permission dialog. Previously approved adapters appear in the serial dropdown on future visits. Browsers do not expose macOS `/dev/tty…` paths; adapters are listed by USB vendor/product and port number.
-2. Click **Connect**. The app verifies all six STS3215 servos, position mode, homing offsets, and calibrated limits. Connection only reads the arm and starts in **Ghost only**.
-3. Select **Track end effector** or **Joint control** to enable torque. Activation resets the target to the measured arm pose before motion. Use **Stop & hold** to stop or **Free joints (torque off)** to release it.
+Control an SO-101 robot arm directly through its USB servo adapter, with a 3D preview, end-effector targets, and individual joint controls.
 
-Your arm's calibration is saved in [webinteractive/calibrations/arm1.json](webinteractive/calibrations/arm1.json), versioned in this repository, and bundled into the published app by default. Both the browser and Python app use it without depending on the Hugging Face cache. **Override calibration** optionally imports another LeRobot JSON; overrides stay in that browser's local storage and are never uploaded.
+1. Connect the arm's servo bus and its required power supply to the USB servo adapter, then connect the adapter to your computer. Close other apps using the adapter.
+2. Use **Override calibration** if your arm needs a different LeRobot calibration JSON; the bundled default is for this project's arm.
+3. Click **Choose port…**, select the adapter, then click **Connect**. The controller starts in **Ghost only** for previewing targets.
+4. Select **Track end effector** to follow the target handles, or **Joint control** to use joint sliders. Drag the target arrows to move, the rings to tilt or twist, and the green handle to open or close the gripper.
+5. Use **Stop & hold** to stop motion. Support the arm before selecting **Free joints (torque off)**.
 
-Close any Python server or other servo application before connecting. Only one application can own the adapter. **Demo** simulates feedback without opening a serial port. Safari and Firefox can use the demo but do not support this app's Web Serial connection.
+Keep the page visible while moving the arm. Switching tabs stops motion and holds position. Closing the browser or unplugging USB cannot guarantee a stop; there is no collision avoidance or hardware emergency stop in the app.
 
-The 3D view shows the measured arm in yellow and a cyan ghost preview. Drag the target arrows or edit X/Y/Z in millimeters. Drag the orange ring to tilt, the purple ring to twist, and the green handle along its rail to open or close the gripper. Hovering shows the handle's angle. All three handles share the sidebar sliders and calibrated limits. Tilt and twist require **Match tool orientation**; position takes priority if the five-axis arm cannot match both. Joint control exposes all six independent sliders and hides the target handles. Servo telemetry and register values appear below the controls.
-
-Motion uses calibrated limits, a configurable speed cap (45°/s initially), fresh feedback, fault checks, and goals no more than about 3° ahead of measured joints. Feedback runs at up to 50 Hz, full telemetry at 5 Hz, and configuration reads every five seconds. One asynchronous loop owns all serial transactions. Switching tabs or a control-loop gap over 250 ms stops motion and holds position; resuming requires explicitly selecting a motion mode again. Browser background throttling means this page must stay visible while controlling the arm.
-
-Support the arm before releasing torque. Closing/crashing the browser or unplugging USB cannot guarantee a stop command; the software stop is not a hardware emergency stop. Collision avoidance is not implemented.
-
-## Development
-
-```sh
-npm ci
-npm run dev
-npm test
-npm run build
-```
-
-The browser app is in `webinteractive/browser/` and uses the existing URDF/STL assets in `webinteractive/model/`. Tests exercise the real serial driver against a simulated six-servo byte stream, including fragmented packets and safety behavior, plus kinematics against Python-generated reference poses. They never access hardware.
-
-Pushes to `main` run tests, build the static app, and deploy it with GitHub Actions. GitHub Pages must use **GitHub Actions** as its publishing source.
-
-The original Python/Viser application remains available; see [its README](webinteractive/README.md). Its pinned environment and packages are unchanged. Model attribution and license are in [webinteractive/model/ATTRIBUTION.md](webinteractive/model/ATTRIBUTION.md).
+Choose **Demo** to try the controls without hardware.
